@@ -13,25 +13,34 @@ class Canvas(QWidget):
         self.offset_x = 0.0
         self.offset_y = 0.0
         self.last_mouse_position = None
-
+        self.mouse_world_position = (0.0, 0.0)
+    
     def paintEvent(self, event):
         painter = QPainter(self)
 
         width = self.width()
         height = self.height()
 
-        # Move origin to center of canvas.
         painter.translate(
             width / 2 + self.offset_x,
             height / 2 + self.offset_y,
         )
 
-
-        # Flip Y axis so positive Y points upward.
         painter.scale(self.scale, -self.scale)
 
         self.draw_grid(painter, width, height)
         self.draw_axes(painter, width, height)
+
+        # Return to screen coordinates
+        painter.resetTransform()
+
+        x, y = self.mouse_world_position
+
+        painter.drawText(
+            10,
+            25,
+            f"X: {x:.2f}    Y: {y:.2f}",
+        )
 
         painter.end()
         
@@ -81,12 +90,16 @@ class Canvas(QWidget):
 
 
     def mouseMoveEvent(self, event):
+        current_position = event.position()
+
+        self.mouse_world_position = self.screen_to_world(
+            current_position
+        )
+
         if self.last_mouse_position is None:
-            return
+            self.last_mouse_position = current_position
 
         if event.buttons() & Qt.MouseButton.MiddleButton:
-            current_position = event.position()
-
             delta = current_position - self.last_mouse_position
 
             self.offset_x += delta.x()
@@ -94,9 +107,25 @@ class Canvas(QWidget):
 
             self.last_mouse_position = current_position
 
-            self.update()
+        self.update()
 
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.MouseButton.MiddleButton:
             self.last_mouse_position = None
+    
+    def screen_to_world(self, position):
+        """Convert a screen position to CAD world coordinates."""
+
+        width = self.width()
+        height = self.height()
+
+        world_x = (
+            position.x() - width / 2 - self.offset_x
+        ) / self.scale
+
+        world_y = -(
+            position.y() - height / 2 - self.offset_y
+        ) / self.scale
+
+        return world_x, world_y
