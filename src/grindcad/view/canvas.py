@@ -1,5 +1,6 @@
 from PySide6.QtGui import QPainter, QPen
 from PySide6.QtWidgets import QWidget
+from PySide6.QtCore import Qt
 
 
 class Canvas(QWidget):
@@ -9,6 +10,9 @@ class Canvas(QWidget):
         super().__init__(parent)
 
         self.scale = 1.0
+        self.offset_x = 0.0
+        self.offset_y = 0.0
+        self.last_mouse_position = None
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -17,7 +21,11 @@ class Canvas(QWidget):
         height = self.height()
 
         # Move origin to center of canvas.
-        painter.translate(width / 2, height / 2)
+        painter.translate(
+            width / 2 + self.offset_x,
+            height / 2 + self.offset_y,
+        )
+
 
         # Flip Y axis so positive Y points upward.
         painter.scale(self.scale, -self.scale)
@@ -66,3 +74,29 @@ class Canvas(QWidget):
 
         # Y axis
         painter.drawLine(0, -height, 0, height)
+        
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.MiddleButton:
+            self.last_mouse_position = event.position()
+
+
+    def mouseMoveEvent(self, event):
+        if self.last_mouse_position is None:
+            return
+
+        if event.buttons() & Qt.MouseButton.MiddleButton:
+            current_position = event.position()
+
+            delta = current_position - self.last_mouse_position
+
+            self.offset_x += delta.x()
+            self.offset_y += delta.y()
+
+            self.last_mouse_position = current_position
+
+            self.update()
+
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.MouseButton.MiddleButton:
+            self.last_mouse_position = None
