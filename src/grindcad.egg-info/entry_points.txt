@@ -1,0 +1,2 @@
+[console_scripts]
+grindcad = grindcad.main:main

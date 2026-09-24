@@ -1,0 +1,8 @@
+Metadata-Version: 2.4
+Name: grindcad
+Version: 0.0.1
+Summary: A small experimental CAD system written in Python
+Requires-Python: >=3.11
+Requires-Dist: PySide6
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"

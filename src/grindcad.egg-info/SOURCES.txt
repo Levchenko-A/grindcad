@@ -1,0 +1,8 @@
+pyproject.toml
+src/grindcad/main.py
+src/grindcad.egg-info/PKG-INFO
+src/grindcad.egg-info/SOURCES.txt
+src/grindcad.egg-info/dependency_links.txt
+src/grindcad.egg-info/entry_points.txt
+src/grindcad.egg-info/requires.txt
+src/grindcad.egg-info/top_level.txt
