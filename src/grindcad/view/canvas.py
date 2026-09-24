@@ -26,7 +26,17 @@ class Canvas(QWidget):
         self.draw_axes(painter, width, height)
 
         painter.end()
+        
+    def wheelEvent(self, event):
+        """Zoom the CAD view using the mouse wheel."""
 
+        if event.angleDelta().y() > 0:
+            self.scale *= 1.1
+        else:
+            self.scale /= 1.1
+
+        self.update()
+        
     def draw_grid(self, painter, width, height):
         pen = QPen()
         pen.setWidth(0)
