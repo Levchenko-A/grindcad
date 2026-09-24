@@ -8,24 +8,38 @@ class Canvas(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
+        self.scale = 1.0
+
     def paintEvent(self, event):
         painter = QPainter(self)
 
         pen = QPen()
         pen.setWidth(1)
-
         painter.setPen(pen)
 
         width = self.width()
         height = self.height()
 
-        center_x = width // 2
-        center_y = height // 2
+        # Move the origin to the center of the canvas.
+        painter.translate(width / 2, height / 2)
 
-        # X axis
-        painter.drawLine(0, center_y, width, center_y)
+        # Flip the Y axis so positive Y points upward.
+        painter.scale(self.scale, -self.scale)
 
-        # Y axis
-        painter.drawLine(center_x, 0, center_x, height)
+        # Draw X axis.
+        painter.drawLine(
+            -width,
+            0,
+            width,
+            0,
+        )
+
+        # Draw Y axis.
+        painter.drawLine(
+            0,
+            -height,
+            0,
+            height,
+        )
 
         painter.end()
