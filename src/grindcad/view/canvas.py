@@ -1,7 +1,7 @@
 from PySide6.QtGui import QPainter, QPen
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt
-
+from grindcad.geometry.point import Point
 
 class Canvas(QWidget):
     """Main drawing surface for GrindCAD."""
@@ -14,6 +14,10 @@ class Canvas(QWidget):
         self.offset_y = 0.0
         self.last_mouse_position = None
         self.mouse_world_position = (0.0, 0.0)
+        self.entities = []
+        self.entities.append(Point(0, 0))
+        self.entities.append(Point(100, 100))
+        self.entities.append(Point(-150, 50))
     
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -30,6 +34,8 @@ class Canvas(QWidget):
 
         self.draw_grid(painter, width, height)
         self.draw_axes(painter, width, height)
+
+        self.draw_entities(painter)
 
         # Return to screen coordinates
         painter.resetTransform()
@@ -129,3 +135,10 @@ class Canvas(QWidget):
         ) / self.scale
 
         return world_x, world_y
+    
+    def draw_entities(self, painter):
+        """Draw CAD entities."""
+        for entity in self.entities:
+            if isinstance(entity, Point):
+            	painter.drawEllipse(entity.x - 3,entity.y - 3,6,6,)
+	
